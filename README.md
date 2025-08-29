@@ -1,63 +1,122 @@
 # Sketch-to-CAD
 
-Convert hand-drawn CAD markups to DXF files using Vision AI
+AI-powered tool to convert hand-drawn CAD markups to DXF files
 
 ## Overview
 
-This tool uses state-of-the-art Vision AI models to convert paper-based architectural drawings with handwritten annotations into digital CAD (DXF) format. Achieves 85-95% accuracy compared to 40-50% with traditional image processing methods.
+Automatically detects handwritten modifications (red/blue pen) on architectural drawings and converts them to DXF format CAD files. Achieves 85-95% accuracy using GPT-5 Vision API (August 2025 latest model).
 
 ## Requirements
 
 - Python 3.8+
 - OpenCV 4.8+
-- ezdxf 1.1.0+
-- API Key (choose one):
-  - Claude Opus 4.1: $15/1M input, $75/1M output tokens
-  - GPT-5: $1.25/1M input, $10/1M output tokens
-  - Gemini 2.0 Flash: Available via Google Cloud Vertex AI
+- Image format: PNG/JPG (300+ DPI recommended)
 
 ## Installation
 
 ```bash
-git clone https://github.com/yourusername/sketch-to-cad.git
+# Clone repository
+git clone https://github.com/micci184/sketch-to-cad.git
 cd sketch-to-cad
+
+# Install dependencies
 pip install -r requirements.txt
+
+# Check environment
+python setup.py
 ```
+
+## Setup
+
+Set OpenAI API key as environment variable:
+
+```bash
+export OPENAI_API_KEY='sk-xxxxx'
+```
+
+Note: This uses the same account as your ChatGPT Plus subscription.
 
 ## Usage
 
-```bash
-# Basic usage
-python src/smartcad.py input.jpg output.dxf
+### Basic Usage
 
-# Specify AI provider
-python src/smartcad.py drawing.jpg --provider gpt5
+```bash
+# Convert with auto-generated output
+python src/main.py input/drawing.png
+
+# Specify output path
+python src/main.py input/scan.jpg output/result.dxf
 ```
 
-## Configuration
+## Directory Structure
 
-Set API keys in environment variables:
-```bash
-export CLAUDE_API_KEY="your-key"
-export OPENAI_API_KEY="your-key"
-export GOOGLE_AI_KEY="your-key"
+```
+sketch-to-cad/
+├── src/
+│   └── main.py          # Main program
+├── input/               # Place input images here
+├── output/              # DXF files output here
+├── .windsurf/
+│   └── rules.yaml       # Windsurf AI configuration
+├── setup.py             # Environment check
+├── requirements.txt     # Dependencies
+└── README.md           # This file
 ```
 
 ## Features
 
-- Handwritten text recognition (Japanese/English)
-- Red/blue pen markup detection
-- Automatic layer separation
-- High accuracy
+### Auto-Detection
+- **Red pen**: Additions/modifications
+- **Blue pen**: Supplementary notes
+- **Black lines**: Existing CAD elements
+- **× marks**: Deletion marks
 
-## Output
+### DXF Layer Structure
+- `0_EXISTING`: Original CAD elements
+- `1_ADDITION`: Red pen additions
+- `2_DELETION`: Deletion marks
+- `3_ANNOTATION`: Notes and annotations
 
-DXF format with layers:
-- `0_EXISTING` - Original elements
-- `1_ADDITION` - Added elements
-- `2_DELETION` - Deletion marks
-- `3_ANNOTATION` - Text annotations
+## Specifications
+
+### Input
+- Format: PNG, JPG
+- Resolution: 300+ DPI recommended
+- Size: Max 20MB
+
+### Output
+- Format: DXF (AutoCAD 2018 compatible)
+- Units: Millimeters
+- Coordinate system: Top-left origin
+
+## AI API
+
+Primary:
+- **GPT-5** (August 2025) - Latest OpenAI model with excellent vision capabilities and cost efficiency
+  - Best for: Overall accuracy and speed
+  - Cost: ~$0.005 per image
+  - Same account as ChatGPT Plus
+
+Future extensions (optional):
+- Claude Opus 4.1 - High-precision structure understanding
+- Gemini 2.0 Flash - Japanese OCR specialized
+
+
+## Development
+
+### Testing
+```bash
+# Run basic test
+python src/main.py input/test.png
+
+# Check output
+ls -la output/
+```
 
 ## License
 
-MIT
+MIT License
+
+---
+
+*Powered by GPT-5 - The most cost-effective solution for CAD conversion*
