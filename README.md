@@ -23,7 +23,7 @@ cd sketch-to-cad
 pip install -r requirements.txt
 
 # Check environment
-python setup.py
+python src/setup.py
 ```
 
 ## Setup
@@ -53,25 +53,25 @@ python src/main.py input/scan.jpg output/result.dxf
 ```
 sketch-to-cad/
 ├── src/
-│   └── main.py          # Main program
+│   ├── main.py          # Main program
+│   └── setup.py         # Environment check
 ├── input/               # Place input images here
 ├── output/              # DXF files output here
-├── .windsurf/
-│   └── rules.yaml       # Windsurf AI configuration
-├── setup.py             # Environment check
-├── requirements.txt     # Dependencies
-└── README.md           # This file
+├── requirements.txt               # Dependencies
+└── README.md                      # This file
 ```
 
 ## Features
 
 ### Auto-Detection
+
 - **Red pen**: Additions/modifications
 - **Blue pen**: Supplementary notes
 - **Black lines**: Existing CAD elements
 - **× marks**: Deletion marks
 
 ### DXF Layer Structure
+
 - `0_EXISTING`: Original CAD elements
 - `1_ADDITION`: Red pen additions
 - `2_DELETION`: Deletion marks
@@ -80,11 +80,13 @@ sketch-to-cad/
 ## Specifications
 
 ### Input
+
 - Format: PNG, JPG
 - Resolution: 300+ DPI recommended
 - Size: Max 20MB
 
 ### Output
+
 - Format: DXF (AutoCAD 2018 compatible)
 - Units: Millimeters
 - Coordinate system: Top-left origin
@@ -92,19 +94,21 @@ sketch-to-cad/
 ## AI API
 
 Primary:
+
 - **GPT-5** (August 2025) - Latest OpenAI model with excellent vision capabilities and cost efficiency
   - Best for: Overall accuracy and speed
   - Cost: ~$0.005 per image
   - Same account as ChatGPT Plus
 
 Future extensions (optional):
+
 - Claude Opus 4.1 - High-precision structure understanding
 - Gemini 2.0 Flash - Japanese OCR specialized
-
 
 ## Development
 
 ### Testing
+
 ```bash
 # Run basic test
 python src/main.py input/test.png

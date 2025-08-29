@@ -18,6 +18,7 @@ from pathlib import Path
 from typing import Dict, List, Tuple, Optional
 from dataclasses import dataclass
 from datetime import datetime
+from dotenv import load_dotenv
 
 # ログ設定
 logging.basicConfig(
@@ -26,6 +27,9 @@ logging.basicConfig(
     datefmt='%Y-%m-%d %H:%M:%S'
 )
 logger = logging.getLogger(__name__)
+
+# .env の読み込み（OPENAI_API_KEY など）
+load_dotenv()
 
 
 # ===========================================

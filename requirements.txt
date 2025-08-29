@@ -16,3 +16,6 @@ openai         # Latest version
 # Optional AI APIs (for future extensions)
 # anthropic              # Claude API
 # google-generativeai    # Gemini API
+
+# Environment
+python-dotenv  # Load .env for API keys
