@@ -1,13 +1,18 @@
-opencv-python==4.8.1.78
-numpy==1.24.3
-Pillow==10.1.0
+# ========================================
+# Sketch-to-CAD Requirements (Latest Versions)
+# ========================================
 
-# Output DXF
-ezdxf==1.1.0
+# Image Processing (Core)
+opencv-python  # Latest version
+numpy          # Latest compatible version
+Pillow         # Latest version
 
-python-dotenv==1.0.0
+# DXF Output
+ezdxf          # Latest version
 
-# AI API
-openai==1.40.0             # GPT-5
-# anthropic==0.34.2           # Claude Opus 4.1
-# google-generativeai==0.7.2  # Gemini 2.0 Flash
+# AI API - GPT-5 (Primary)
+openai         # Latest version
+
+# Optional AI APIs (for future extensions)
+# anthropic              # Claude API
+# google-generativeai    # Gemini API
