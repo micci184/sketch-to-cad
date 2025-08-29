@@ -42,25 +42,27 @@ Note: This uses the same account as your ChatGPT Plus subscription.
 
 ```bash
 # Convert with auto-generated output
-python src/main.py input/drawing.png
+python main.py input/drawing.png
 
 # Specify output path
-python src/main.py input/scan.jpg output/result.dxf
+python main.py input/scan.jpg output/result.dxf
 ```
 
 ## Directory Structure
 
 ```
 sketch-to-cad/
+├── main.py              # Main program (CLI entrypoint)
 ├── src/
-│   └── main.py          # Main program
+│   └── sample_implementation.py  # Reference implementation
 ├── input/               # Place input images here
 ├── output/              # DXF files output here
 ├── .windsurf/
-│   └── rules.yaml       # Windsurf AI configuration
+│   └── rules/
+│       └── code-rule.md # Windsurf AI configuration
 ├── setup.py             # Environment check
 ├── requirements.txt     # Dependencies
-└── README.md           # This file
+└── README.md            # This file
 ```
 
 ## Features
@@ -107,7 +109,7 @@ Future extensions (optional):
 ### Testing
 ```bash
 # Run basic test
-python src/main.py input/test.png
+python main.py input/test.png
 
 # Check output
 ls -la output/
