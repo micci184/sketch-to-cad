@@ -48,7 +48,7 @@ export GOOGLE_AI_KEY="your-key"
 - Handwritten text recognition (Japanese/English)
 - Red/blue pen markup detection
 - Automatic layer separation
-- High accuracy (85-95%)
+- High accuracy
 
 ## Output
 
@@ -57,12 +57,6 @@ DXF format with layers:
 - `1_ADDITION` - Added elements
 - `2_DELETION` - Deletion marks
 - `3_ANNOTATION` - Text annotations
-
-## Performance
-
-- Processing time: 10-20 seconds per drawing
-- Cost: $0.01-0.05 per image
-- Accuracy: 85-95%
 
 ## License
 
