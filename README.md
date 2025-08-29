@@ -116,7 +116,3 @@ ls -la output/
 ## License
 
 MIT License
-
----
-
-*Powered by GPT-5 - The most cost-effective solution for CAD conversion*
