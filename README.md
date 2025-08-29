@@ -23,7 +23,7 @@ cd sketch-to-cad
 pip install -r requirements.txt
 
 # Check environment
-python setup.py
+python src/setup.py
 ```
 
 ## Setup
@@ -53,13 +53,9 @@ python src/main.py input/scan.jpg output/result.dxf
 ```
 sketch-to-cad/
 ├── src/
-│   ├── main.py                    # Main program (CLI entrypoint)
-│   └── sample_implementation.py   # Reference implementation
-├── input/                         # Place input images here
-├── output/                        # DXF files output here
-├── .windsurf/
-│   └── rules/
-│       └── code-rule.md           # Windsurf AI configuration
+│   └── main.py          # Main program
+├── input/               # Place input images here
+├── output/              # DXF files output here
 ├── setup.py                       # Environment check
 ├── requirements.txt               # Dependencies
 └── README.md                      # This file
@@ -69,7 +65,7 @@ sketch-to-cad/
 
 ### Auto-Detection
 
-- **Red pen**: Additions/modifications
+-: **Red pen**: Additions/modifications;
 - **Blue pen**: Supplementary notes
 - **Black lines**: Existing CAD elements
 - **× marks**: Deletion marks
