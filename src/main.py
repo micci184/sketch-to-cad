@@ -4,8 +4,8 @@ Sketch-to-CAD Main Program
 Convert hand-drawn CAD markups to DXF - GPT-5 Version
 
 Usage:
-    python main.py input/drawing.png
-    python main.py input/drawing.jpg output/result.dxf
+    python src/main.py input/drawing.png
+    python src/main.py input/drawing.jpg output/result.dxf
 """
 
 import os
@@ -730,10 +730,10 @@ def main():
     # Check arguments
     if len(sys.argv) < 2:
         print("\nUsage:")
-        print("  python main.py <input_image> [output_dxf]")
+        print("  python src/main.py <input_image> [output_dxf]")
         print("\nExamples:")
-        print("  python main.py input/drawing.png")
-        print("  python main.py input/scan.jpg output/result.dxf")
+        print("  python src/main.py input/drawing.png")
+        print("  python src/main.py input/scan.jpg output/result.dxf")
         print("\nSupported formats: PNG, JPG")
         print("Recommended: Scan with iPhone Notes app → Save as PNG")
         sys.exit(1)
