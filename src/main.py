@@ -639,15 +639,32 @@ class SketchToCAD:
             
             # 1. Image preprocessing
             processed = self.preprocess_image(input_path)
+
+            # Debug: save masks if enabled
+            if os.getenv("SKETCH2CAD_DEBUG"):
+                try:
+                    debug_dir = Path("output") / "debug"
+                    debug_dir.mkdir(parents=True, exist_ok=True)
+                    ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+                    cv2.imwrite(str(debug_dir / f"red_mask_{ts}.png"), processed['red_mask'])
+                    cv2.imwrite(str(debug_dir / f"blue_mask_{ts}.png"), processed['blue_mask'])
+                    cv2.imwrite(str(debug_dir / f"black_mask_{ts}.png"), processed['black_mask'])
+                    logger.info(f"Saved debug masks to {debug_dir}/ (timestamp {ts})")
+                except Exception as e:
+                    logger.warning(f"Failed to save debug masks: {e}")
             
             # 2. Element detection
             elements = self.detect_elements(processed)
             
             # 3. AI recognition (if async processing needed)
+            ai_elements: List[CADElement] = []
             if self.use_ai:
                 import asyncio
                 ai_elements = asyncio.run(self.recognize_with_ai(processed))
                 elements.extend(ai_elements)
+                logger.info(f"AI recognition enabled: provider={self.ai_provider}, recognized={len(ai_elements)} elements")
+            else:
+                logger.info("AI recognition disabled (no API key or provider not configured)")
             
             # 4. DXF conversion
             success = self.convert_to_dxf(elements, output_path)
