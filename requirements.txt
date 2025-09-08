@@ -11,7 +11,7 @@ Pillow         # Latest version
 ezdxf          # Latest version
 
 # AI API - GPT-5 (Primary)
-openai         # Latest version
+openai==1.14.3 # Pin version to avoid proxy issues
 
 # Optional AI APIs (for future extensions)
 # anthropic              # Claude API
@@ -21,4 +21,4 @@ openai         # Latest version
 python-dotenv  # Load .env for API keys
 
 # HTTP Client (for OpenAI)
-httpx          # Explicitly required for proxy configuration
+httpx==0.27.0  # Pin version to match openai dependency
