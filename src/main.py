@@ -426,7 +426,7 @@ class SketchToCAD:
     async def _call_gpt5_api(self, image_data: Dict) -> List[CADElement]:
         """GPT-5 API call (August 2025 latest)"""
         try:
-            from openai import OpenAI
+            import openai
             import base64
             import os
 
@@ -435,7 +435,7 @@ class SketchToCAD:
             original_proxies = {key: os.environ.pop(key, None) for key in proxy_keys}
 
             try:
-                client = OpenAI(api_key=self.api_key)
+                client = openai.OpenAI(api_key=self.api_key)
             finally:
                 # Restore original proxy settings
                 for key, value in original_proxies.items():
