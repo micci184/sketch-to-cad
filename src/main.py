@@ -421,9 +421,19 @@ class SketchToCAD:
         try:
             from openai import OpenAI
             import base64
-            import httpx
+            import os
 
-            client = OpenAI(api_key=self.api_key)
+            # Temporarily unset proxy env variables to fix httpx/openai init issue
+            proxy_keys = ['http_proxy', 'https_proxy', 'HTTP_PROXY', 'HTTPS_PROXY']
+            original_proxies = {key: os.environ.pop(key, None) for key in proxy_keys}
+
+            try:
+                client = OpenAI(api_key=self.api_key)
+            finally:
+                # Restore original proxy settings
+                for key, value in original_proxies.items():
+                    if value is not None:
+                        os.environ[key] = value
             
             # Encode image to Base64
             _, buffer = cv2.imencode('.png', image_data['original'])
