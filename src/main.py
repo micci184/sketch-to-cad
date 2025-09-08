@@ -47,7 +47,6 @@ class CADElement:
     confidence: float = 1.0
 
 
-@dataclass
 class AIApiError(Exception):
     """Custom exception for AI API related errors."""
     pass
@@ -510,12 +509,12 @@ class SketchToCAD:
             logger.error(msg)
             raise AIApiError(msg) from e
     
-    async def _call_claude_api(self, image_data: Dict) -> List[CADElement]:
+    async def _call_claude_api(self, _image_data: Dict) -> List[CADElement]:
         """Claude API call (optional)"""
         # For future extension
         return []
     
-    async def _call_gemini_api(self, image_data: Dict) -> List[CADElement]:
+    async def _call_gemini_api(self, _image_data: Dict) -> List[CADElement]:
         """Gemini API call (optional)"""
         # For future extension
         return []
@@ -535,7 +534,7 @@ class SketchToCAD:
         Returns:
             Success/Failure
         """
-        logger.info(f"Starting DXF conversion...")
+        logger.info("Starting DXF conversion...")
         
         try:
             # Create DXF document
@@ -689,17 +688,20 @@ class SketchToCAD:
                     warning_msg = f"AI recognition failed: {e}. Output may be incomplete."
                     logger.warning(warning_msg)
                     warnings.append(warning_msg)
+                except Exception as e:
+                    logger.error(f"An unexpected error occurred during AI recognition: {e}")
+                    warnings.append(f"An unexpected error occurred during AI recognition: {e}")
             else:
                 logger.info("AI recognition disabled by user or config.")
-            
-            # 4. DXF conversion
+
+            # 4. DXF Conversion
             success = self.convert_to_dxf(elements, output_path)
-            
+
             processing_time = time.time() - start_time
             
             if success:
                 logger.info("=" * 50)
-                logger.info(f"✅ Conversion successful!")
+                logger.info("✅ Conversion successful!")
                 logger.info(f"Processing time: {processing_time:.2f} seconds")
                 logger.info("=" * 50)
                 
