@@ -16,7 +16,7 @@ import ezdxf
 import logging
 from pathlib import Path
 from typing import Dict, List, Tuple, Optional
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
 from dotenv import load_dotenv
 
@@ -48,6 +48,12 @@ class CADElement:
 
 
 @dataclass
+class AIApiError(Exception):
+    """Custom exception for AI API related errors."""
+    pass
+
+
+@dataclass
 class ProcessingResult:
     """Data class representing processing result"""
     success: bool
@@ -55,6 +61,7 @@ class ProcessingResult:
     element_count: int = 0
     processing_time: float = 0.0
     error_message: Optional[str] = None
+    warnings: List[str] = field(default_factory=list)
 
 
 # ===========================================
@@ -498,11 +505,15 @@ class SketchToCAD:
                 logger.info(f"  GPT-5 recognized {len(elements)} elements")
                 return elements
                 
+        except openai.RateLimitError as e:
+            msg = f"OpenAI API rate limit or quota exceeded: {e}"
+            logger.error(msg)
+            raise AIApiError(msg) from e
         except Exception as e:
             import traceback
-            logger.error(f"GPT API error: {e}\n{traceback.format_exc()}")
-            
-            return []
+            msg = f"An unexpected GPT API error occurred: {e}\n{traceback.format_exc()}"
+            logger.error(msg)
+            raise AIApiError(msg) from e
     
     async def _call_claude_api(self, image_data: Dict) -> List[CADElement]:
         """Claude API call (optional)"""
@@ -671,15 +682,20 @@ class SketchToCAD:
             # 2. Element detection
             elements = self.detect_elements(processed)
             
-            # 3. AI recognition (if async processing needed)
-            ai_elements: List[CADElement] = []
+            # 3. AI recognition
+            warnings = []
             if self.use_ai:
-                import asyncio
-                ai_elements = asyncio.run(self.recognize_with_ai(processed))
-                elements.extend(ai_elements)
-                logger.info(f"AI recognition enabled: provider={self.ai_provider}, recognized={len(ai_elements)} elements")
+                try:
+                    import asyncio
+                    ai_elements = asyncio.run(self.recognize_with_ai(processed))
+                    elements.extend(ai_elements)
+                    logger.info(f"AI recognition enabled: provider={self.ai_provider}, recognized={len(ai_elements)} elements")
+                except AIApiError as e:
+                    warning_msg = f"AI recognition failed: {e}. Output may be incomplete."
+                    logger.warning(warning_msg)
+                    warnings.append(warning_msg)
             else:
-                logger.info("AI recognition disabled (no API key or provider not configured)")
+                logger.info("AI recognition disabled by user or config.")
             
             # 4. DXF conversion
             success = self.convert_to_dxf(elements, output_path)
@@ -696,7 +712,8 @@ class SketchToCAD:
                     success=True,
                     output_path=output_path,
                     element_count=len(elements),
-                    processing_time=processing_time
+                    processing_time=processing_time,
+                    warnings=warnings
                 )
             else:
                 return ProcessingResult(
@@ -756,33 +773,36 @@ def validate_input(input_path: str) -> bool:
 
 def main():
     """Command line execution"""
+    import argparse
+    parser = argparse.ArgumentParser(description="Convert hand-drawn CAD markups to DXF files.")
+    parser.add_argument("input_image", help="Path to the input image file (PNG, JPG).")
+    parser.add_argument("output_dxf", nargs='?', default=None, help="Optional path for the output DXF file.")
+    parser.add_argument("--no-ai", action="store_true", help="Disable AI recognition and run only CV-based detection.")
+
+    args = parser.parse_args()
+
     # Setup directories
     setup_directories()
-    
-    # Check arguments
-    if len(sys.argv) < 2:
-        print("\nUsage:")
-        print("  python src/main.py <input_image> [output_dxf]")
-        print("\nExamples:")
-        print("  python src/main.py input/drawing.png")
-        print("  python src/main.py input/scan.jpg output/result.dxf")
-        print("\nSupported formats: PNG, JPG")
-        print("Recommended: Scan with iPhone Notes app → Save as PNG")
-        sys.exit(1)
-    
-    input_path = sys.argv[1]
-    output_path = sys.argv[2] if len(sys.argv) > 2 else None
-    
+
     # Validate input
-    if not validate_input(input_path):
+    if not validate_input(args.input_image):
         sys.exit(1)
-    
-    # Execute conversion (using GPT-5)
-    converter = SketchToCAD(use_ai=True, ai_provider='gpt5')
-    result = converter.process(input_path, output_path)
+
+    # Determine if AI should be used
+    use_ai_flag = not args.no_ai
+
+    # Execute conversion
+    converter = SketchToCAD(use_ai=use_ai_flag, ai_provider='gpt5')
+    result = converter.process(args.input_image, args.output_dxf)
     
     if result.success:
-        print(f"\n✅ Conversion complete!")
+        if result.warnings:
+            print(f"\n⚠️  Conversion complete with warnings:")
+            for warning in result.warnings:
+                print(f"  - {warning}")
+        else:
+            print(f"\n✅ Conversion complete!")
+        
         print(f"📁 Output file: {result.output_path}")
         print(f"📊 Elements detected: {result.element_count}")
         print(f"⏱️  Processing time: {result.processing_time:.2f} seconds")
