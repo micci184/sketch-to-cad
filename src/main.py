@@ -421,11 +421,12 @@ class SketchToCAD:
         try:
             from openai import OpenAI
             import base64
-            import httpx
 
-            # Explicitly create an httpx client without proxy settings from env vars
-            http_client = httpx.Client(proxies={})
-            client = OpenAI(api_key=self.api_key, http_client=http_client)
+            # Configure the default httpx client to ignore environment proxies
+            client = OpenAI(
+                api_key=self.api_key,
+                http_client=httpx.Client(proxies={}, transport=httpx.HTTPTransport(local_address="0.0.0.0"))
+            )
             
             # Encode image to Base64
             _, buffer = cv2.imencode('.png', image_data['original'])
