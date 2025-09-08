@@ -47,6 +47,7 @@ class CADElement:
     confidence: float = 1.0
 
 
+@dataclass
 class AIApiError(Exception):
     """Custom exception for AI API related errors."""
     pass
