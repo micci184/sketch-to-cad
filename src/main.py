@@ -111,6 +111,8 @@ class SketchToCAD:
                 logger.error("OPENAI_API_KEY not set")
                 logger.error("Run: export OPENAI_API_KEY='your-key'")
                 self.use_ai = False
+            else:
+                logger.info("AI key detected. Enabling GPT provider (gpt5 route)")
         else:
             # Other providers (for future extensions)
             api_keys = {
@@ -408,7 +410,8 @@ class SketchToCAD:
             elif self.ai_provider == 'gemini':
                 return await self._call_gemini_api(image_data)
         except Exception as e:
-            logger.error(f"AI recognition error: {e}")
+            import traceback
+            logger.error(f"AI recognition error: {e}\n{traceback.format_exc()}")
             return []
         
         return []
@@ -416,17 +419,17 @@ class SketchToCAD:
     async def _call_gpt5_api(self, image_data: Dict) -> List[CADElement]:
         """GPT-5 API call (August 2025 latest)"""
         try:
-            import openai
+            from openai import OpenAI
             import base64
             
-            client = openai.OpenAI(api_key=self.api_key)
+            client = OpenAI(api_key=self.api_key)
             
             # Encode image to Base64
             _, buffer = cv2.imencode('.png', image_data['original'])
             img_base64 = base64.b64encode(buffer).decode('utf-8')
             
             response = client.chat.completions.create(
-                model="gpt-5",  # Latest model released August 2025
+                model="gpt-4o",  # Use widely available multimodal model
                 messages=[
                     {
                         "role": "system",
@@ -485,9 +488,10 @@ class SketchToCAD:
                 return elements
                 
         except Exception as e:
-            logger.error(f"GPT-5 API error: {e}")
+            import traceback
+            logger.error(f"GPT API error: {e}\n{traceback.format_exc()}")
             
-        return []
+            return []
     
     async def _call_claude_api(self, image_data: Dict) -> List[CADElement]:
         """Claude API call (optional)"""
