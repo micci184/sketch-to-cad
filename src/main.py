@@ -294,13 +294,13 @@ class SketchToCAD:
         """Detect lines using Hough transform"""
         # Adjust parameters by color
         if color == 'black':
-            min_length = 30
-            max_gap = 5
+            min_length = 50  # Longer lines for CAD
+            max_gap = 3      # Smaller gap for precision
             threshold = 50
         else:  # Handwritten lines
-            min_length = 20
-            max_gap = 10
-            threshold = 30
+            min_length = 25  # Longer lines for handwriting
+            max_gap = 15     # Wider gap for broken lines
+            threshold = 25   # Lower threshold for faint lines
         
         lines = cv2.HoughLinesP(
             mask,
@@ -421,8 +421,11 @@ class SketchToCAD:
         try:
             from openai import OpenAI
             import base64
-            
-            client = OpenAI(api_key=self.api_key)
+            import httpx
+
+            # Explicitly create an httpx client without proxy settings from env vars
+            http_client = httpx.Client(proxies={})
+            client = OpenAI(api_key=self.api_key, http_client=http_client)
             
             # Encode image to Base64
             _, buffer = cv2.imencode('.png', image_data['original'])
