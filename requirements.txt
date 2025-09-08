@@ -19,3 +19,6 @@ openai         # Latest version
 
 # Environment
 python-dotenv  # Load .env for API keys
+
+# HTTP Client (for OpenAI)
+httpx          # Explicitly required for proxy configuration

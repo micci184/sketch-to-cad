@@ -421,6 +421,7 @@ class SketchToCAD:
         try:
             from openai import OpenAI
             import base64
+            import httpx
 
             # Configure the default httpx client to ignore environment proxies
             client = OpenAI(
