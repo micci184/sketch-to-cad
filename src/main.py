@@ -47,6 +47,7 @@ class CADElement:
     confidence: float = 1.0
 
 
+@dataclass
 class AIApiError(Exception):
     """Custom exception for AI API related errors."""
     pass
@@ -408,17 +409,12 @@ class SketchToCAD:
         
         logger.info(f"Running AI recognition ({self.ai_provider})...")
         
-        try:
-            if self.ai_provider == 'gpt5':
-                return await self._call_gpt5_api(image_data)
-            elif self.ai_provider == 'claude':
-                return await self._call_claude_api(image_data)
-            elif self.ai_provider == 'gemini':
-                return await self._call_gemini_api(image_data)
-        except Exception as e:
-            import traceback
-            logger.error(f"AI recognition error: {e}\n{traceback.format_exc()}")
-            return []
+        if self.ai_provider == 'gpt5':
+            return await self._call_gpt5_api(image_data)
+        elif self.ai_provider == 'claude':
+            return await self._call_claude_api(image_data)
+        elif self.ai_provider == 'gemini':
+            return await self._call_gemini_api(image_data)
         
         return []
     
