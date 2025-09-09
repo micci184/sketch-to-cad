@@ -452,13 +452,20 @@ class SketchToCAD:
                         "content": [
                             {
                                 "type": "text",
-                                "text": """Analyze this architectural drawing and identify:
-                                1. Red pen additions/modifications
-                                2. Blue pen annotations
-                                3. Deletion marks (X marks)
-                                4. Japanese text annotations
-                                
-                                Output in JSON format with coordinates and types."""
+                                "text": """Analyze this architectural drawing. Identify all handwritten text, especially Japanese text.
+                                Return the results in a strict JSON format. The JSON object must have a key named 'annotations' which is a list of objects.
+                                Each object in the list must have the following keys:
+                                - 'text': The recognized text content (string).
+                                - 'coordinates': A list containing the x and y coordinates of the text's starting point (e.g., [x, y]).
+
+                                Example output:
+                                {
+                                  "annotations": [
+                                    { "text": "トイレ", "coordinates": [500, 600] },
+                                    { "text": "収納", "coordinates": [600, 700] }
+                                  ]
+                                }
+                                """
                             },
                             {
                                 "type": "image_url",
@@ -475,6 +482,7 @@ class SketchToCAD:
             
             # Parse response
             content = response.choices[0].message.content
+            logger.info(f"  GPT-5 raw response: {content}")
             
             # Parse JSON and create CADElements
             import json
@@ -485,16 +493,18 @@ class SketchToCAD:
                 data = json.loads(json_match.group())
                 elements = []
                 
-                # Process text elements
-                for text_item in data.get('texts', []):
-                    element = CADElement(
-                        element_type='text',
-                        coordinates=[(text_item['x'], text_item['y'])],
-                        content=text_item.get('content', ''),
-                        layer='3_ANNOTATION',
-                        confidence=0.9
-                    )
-                    elements.append(element)
+                # Process text elements from 'annotations'
+                for text_item in data.get('annotations', []):
+                    coords = text_item.get('coordinates')
+                    if coords and len(coords) == 2:
+                        element = CADElement(
+                            element_type='text',
+                            coordinates=[(coords[0], coords[1])],
+                            content=text_item.get('text', ''),
+                            layer='3_ANNOTATION',
+                            confidence=0.9
+                        )
+                        elements.append(element)
                 
                 logger.info(f"  GPT-5 recognized {len(elements)} elements")
                 return elements
